@@ -15,8 +15,9 @@ A lightweight, portable Windows screenshot clipping utility built with native C+
 Run these commands from an MSYS2 MinGW/UCRT shell with CMake and Ninja installed:
 
 ```bash
-cmake -S . -B build_mingw -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build_mingw
+cmake -GNinja -S . -B build_mingw -DCMAKE_BUILD_TYPE=Release 
+cd build_mingw
+ninja
 ```
 
 The executable is `build_mingw/ClipDrag.exe`.

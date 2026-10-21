@@ -1,3 +1,4 @@
+#include <cstring>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
@@ -33,19 +34,16 @@ RECT SelectionRect()
     };
 }
 
+using SetDpiAwarenessContextFn = BOOL(WINAPI*)(HANDLE);
 void SetBestAvailableDpiAwareness()
 {
     HMODULE user32 = GetModuleHandleW(L"user32.dll");
     if (user32) {
-        FARPROC proc = GetProcAddress(user32, "SetProcessDpiAwarenessContext");
+        FARPROC proc = GetProcAddress(
+            user32, "SetProcessDpiAwarenessContext");
         SetDpiAwarenessContextFn setDpiContext = nullptr;
-        static_assert(sizeof(setDpiContext) == sizeof(proc),
-                      "Function pointer size differs from FARPROC");
-        // GetProcAddress returns the Windows API function address. Copy the
-        // pointer representation to avoid MinGW's incompatible-function-cast warning.
-        if (proc)
-            __builtin_memcpy(&setDpiContext, &proc, sizeof(setDpiContext));
-
+        static_assert(sizeof(setDpiContext) == sizeof(proc));
+        std::memcpy(&setDpiContext, &proc, sizeof(setDpiContext));
         HANDLE perMonitorV2 = reinterpret_cast<HANDLE>(static_cast<INT_PTR>(-4));
         if (setDpiContext && setDpiContext(perMonitorV2))
             return;
